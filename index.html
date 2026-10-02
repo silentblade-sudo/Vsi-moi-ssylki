@@ -13,6 +13,7 @@
     --blood: #8b0000; --crimson: #dc143c; --red: #ff1a1a; --ember: #ff4444;
     --text: #e0d6d6; --muted: #665555;
     --border: #2a1515; --border-glow: #5a0000;
+    --fire: #ff8800; --fire-dim: #7a3d00;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -797,6 +798,111 @@
       transform: translateY(-100px) scale(1.5);
     }
   }
+
+  /* ============================================================
+     УЛУЧШЕНИЯ: быстрые фильтры, избранное, вид, фоллбек фавиконок
+     ============================================================ */
+
+  /* Цветной акцент категории слева на карточке и у заголовка секции */
+  .link-card { border-left: 3px solid var(--card-accent, var(--border)); }
+  .category h2::before { color: var(--card-accent, var(--blood)); }
+  .link-card.is-favorite { box-shadow: 0 0 15px rgba(255,136,0,0.12); }
+  .link-card.is-favorite:hover {
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,136,0,0.25);
+  }
+
+  /* --- Быстрые фильтры (бейджи категорий) --- */
+  .category-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+  .chip {
+    font-family: 'Raleway', sans-serif; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 7px 14px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .chip::before {
+    content: ''; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    background: var(--chip-color, var(--muted));
+    box-shadow: 0 0 6px var(--chip-color, transparent);
+  }
+  .chip-special::before { display: none; }
+  .chip .chip-count {
+    font-size: 10px; opacity: 0.85; background: rgba(255,255,255,0.08);
+    padding: 1px 6px; border-radius: 8px;
+  }
+  .chip.fire.btn-primary {
+    background: linear-gradient(135deg, var(--fire-dim), var(--fire));
+    border-color: var(--fire);
+    box-shadow: 0 0 15px rgba(255,136,0,0.4);
+  }
+
+  /* --- Закреплённая секция «Избранное» --- */
+  .pinned-category h2 { color: var(--fire); text-shadow: 0 0 20px rgba(255,136,0,0.4); }
+  .pinned-category h2::before { content: '🔥'; font-size: 12px; }
+
+  /* --- Кнопка «в избранное» на карточке --- */
+  .fav-btn {
+    background: none; border: none; padding: 2px 4px; font-size: 14px;
+    cursor: pointer; opacity: 0.3; filter: grayscale(100%);
+    transition: all 0.25s ease; flex-shrink: 0; line-height: 1;
+  }
+  .fav-btn:hover { opacity: 0.75; transform: scale(1.15); box-shadow: none; }
+  .fav-btn.active { opacity: 1; filter: grayscale(0%) drop-shadow(0 0 6px rgba(255,136,0,0.8)); }
+  .fav-btn.active:hover { box-shadow: none; }
+
+  /* --- Инлайн-тег категории (в закреплённых карточках) --- */
+  .cat-tag {
+    margin-top: 10px; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 4px 10px; border-radius: 12px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--muted);
+  }
+  .cat-tag::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--chip-color, var(--muted)); box-shadow: 0 0 6px var(--chip-color, transparent);
+  }
+  .cat-tag:hover { color: var(--text); border-color: var(--border-glow); background: rgba(139,0,0,0.08); box-shadow: none; }
+
+  /* --- Фоллбек фавикона, если иконка не загрузилась --- */
+  .favicon-fallback {
+    display: none; width: 22px; height: 22px; border-radius: 4px; flex-shrink: 0;
+    align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-weight: 700; font-size: 9px; letter-spacing: 0.5px;
+    color: var(--ember); text-shadow: 0 0 6px rgba(220,20,60,0.6);
+    background: linear-gradient(135deg, var(--dark), var(--shadow));
+    border: 1px solid var(--border);
+  }
+  .link-card:hover .favicon-fallback { border-color: var(--border-glow); color: var(--red); }
+
+  /* --- Переключатель вида: сетка / список --- */
+  .view-toggle { display: flex; gap: 4px; margin-left: auto; }
+  .view-btn { padding: 8px 12px; font-size: 14px; line-height: 1; }
+
+  body.view-list .grid { grid-template-columns: 1fr; gap: 6px; }
+  body.view-list .link-card { display: flex; align-items: center; gap: 12px; padding: 9px 14px; animation: none; }
+  body.view-list .link-head { margin-bottom: 0; flex: 1; min-width: 0; }
+  body.view-list .link-url { flex-shrink: 0; max-width: 200px; margin: 0; }
+  body.view-list .link-desc { display: none; }
+  body.view-list .cat-tag { flex-shrink: 0; margin: 0; }
+  body.view-list .card-actions { position: static; display: flex; opacity: 0.55; margin-left: 4px; }
+  body.view-list .link-card:hover .card-actions { opacity: 1; }
+
+  /* --- Выпадающее меню экспорта --- */
+  .export-wrap { position: relative; }
+  .export-menu {
+    display: none; position: absolute; top: calc(100% + 8px); left: 0;
+    background: linear-gradient(180deg, #0d0d0d, #0a0a0a);
+    border: 1px solid var(--border-glow); border-radius: 8px;
+    padding: 6px; min-width: 220px; z-index: 30;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 20px rgba(139,0,0,0.2);
+  }
+  .export-menu.active { display: block; }
+  .export-menu button {
+    display: block; width: 100%; text-align: left;
+    background: transparent; border: none; padding: 10px 12px;
+    border-radius: 6px; font-size: 13px; color: var(--text); font-weight: 400;
+  }
+  .export-menu button:hover { background: rgba(139,0,0,0.15); color: var(--ember); box-shadow: none; }
+  .export-menu button small { display: block; color: var(--muted); font-size: 10px; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -815,7 +921,14 @@
       <div class="subtitle">хранилище ссылок</div>
     </div>
     <button class="btn-primary" id="addBtn"> Добавить</button>
-    <button class="btn-ghost" id="exportBtn">↓ Экспорт</button>
+    <div class="export-wrap">
+      <button class="btn-ghost" id="exportBtn">↓ Экспорт ▾</button>
+      <div class="export-menu" id="exportMenu">
+        <button data-export="json">JSON<small>резервная копия</small></button>
+        <button data-export="md">Markdown (.md)<small>файл со списком ссылок</small></button>
+        <button data-export="copy">Скопировать список<small>чтобы вставить в Telegram/Discord</small></button>
+      </div>
+    </div>
     <button class="btn-ghost" id="importBtn">↑ Импорт</button>
     <input type="file" id="fileInput" accept=".json" style="display:none">
     <div class="counter">Ссылок: <span id="count">0</span></div>
@@ -823,6 +936,10 @@
   <div class="controls">
     <input type="text" id="search" placeholder="⌕ Искать во тьме...">
     <select id="filter"><option value="">Все категории</option></select>
+    <div class="view-toggle">
+      <button id="viewGridBtn" class="view-btn btn-primary" title="Вид: сетка">▦</button>
+      <button id="viewListBtn" class="view-btn" title="Вид: список">☰</button>
+    </div>
   </div>
 </header>
 
@@ -968,6 +1085,9 @@ let links = JSON.parse(localStorage.getItem('links') || '[]');
 let editId = null;
 let deleteId = null;
 let tempAvatar = null;
+let activeCategory = '';
+let showFavoritesOnly = false;
+let viewMode = localStorage.getItem('viewMode') || 'grid';
 
 const $ = id => document.getElementById(id);
 const save = () => localStorage.setItem('links', JSON.stringify(links));
@@ -1052,66 +1172,148 @@ $('removeAvatarBtn').addEventListener('click', function() {
 });
 
 // === ССЫЛКИ ===
+function hashStr(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  return Math.abs(hash);
+}
+function categoryColor(cat) { return `hsl(${hashStr(cat) % 360}, 60%, 55%)`; }
+function domainInitials(domain) {
+  const clean = domain.replace(/^www\./, '');
+  const label = clean.split('.')[0] || clean;
+  return (label.slice(0, 2) || '??').toUpperCase();
+}
+function matchesSearch(l, q) {
+  return !q || l.title.toLowerCase().includes(q) || (l.desc||'').toLowerCase().includes(q) || (l.category||'').toLowerCase().includes(q);
+}
+
+function cardHtml(l, showCategoryTag) {
+  const domain = getDomain(l.url);
+  const catName = l.category || 'Без категории';
+  return `
+    <div class="link-card ${l.favorite ? 'is-favorite' : ''}" data-url="${escapeHtml(l.url)}" style="--card-accent:${categoryColor(catName)}">
+      <div class="card-actions">
+        <button onclick="editLink('${l.id}')" title="Редактировать">✎</button>
+        <button onclick="showDeleteConfirm('${l.id}')" title="Удалить"></button>
+      </div>
+      <div class="link-head">
+        <img class="favicon-img" src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=32" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <span class="favicon-fallback">${escapeHtml(domainInitials(domain))}</span>
+        <div class="link-title">${escapeHtml(l.title)}</div>
+        <button class="fav-btn ${l.favorite ? 'active' : ''}" data-fav-id="${l.id}" title="${l.favorite ? 'Убрать из избранного' : 'В избранное'}">🔥</button>
+      </div>
+      <div class="link-url">${escapeHtml(domain)}</div>
+      ${showCategoryTag && l.category ? `<button class="cat-tag" data-cat-tag="${escapeHtml(l.category)}" style="--chip-color:${categoryColor(l.category)}">${escapeHtml(l.category)}</button>` : ''}
+      ${l.desc ? `<div class="link-desc">${escapeHtml(l.desc)}</div>` : ''}
+    </div>
+  `;
+}
+
+function chipsHtml(cats, favCount) {
+  const allActive = !activeCategory && !showFavoritesOnly;
+  return `
+    <div class="category-chips">
+      <button class="chip chip-special ${allActive ? 'btn-primary' : ''}" data-chip-all>Все</button>
+      <button class="chip chip-special fire ${showFavoritesOnly ? 'btn-primary' : ''}" data-chip-fav>🔥 Избранное${favCount ? ` <span class="chip-count">${favCount}</span>` : ''}</button>
+      ${cats.map(c => `<button class="chip ${activeCategory === c ? 'btn-primary' : ''}" data-chip-cat="${escapeHtml(c)}" style="--chip-color:${categoryColor(c)}">${escapeHtml(c)}</button>`).join('')}
+    </div>`;
+}
+
 function render() {
   const q = $('search').value.toLowerCase();
-  const cat = $('filter').value;
-  const filtered = links.filter(l =>
-    (!q || l.title.toLowerCase().includes(q) || (l.desc||'').toLowerCase().includes(q)) &&
-    (!cat || l.category === cat)
+  const base = links.filter(l => matchesSearch(l, q));
+  const filtered = base.filter(l =>
+    (!activeCategory || l.category === activeCategory) &&
+    (!showFavoritesOnly || l.favorite)
   );
 
-  $('count').textContent = links.length;
+  $('count').textContent = filtered.length === links.length ? links.length : `${filtered.length} / ${links.length}`;
 
-  const groups = {};
-  filtered.forEach(l => {
-    const c = l.category || 'Без категории';
-    (groups[c] = groups[c] || []).push(l);
-  });
+  const cats = [...new Set(links.map(l => l.category).filter(Boolean))].sort();
+  const favCount = links.filter(l => l.favorite).length;
 
-  const main = $('main');
-  if (filtered.length === 0) {
-    main.innerHTML = `<div class="empty"><span class="icon">️</span>Тьма пуста...<br><small style="color:#443333">Добавь первую ссылку, чтобы разжечь огонь</small></div>`;
-    return;
+  let html = chipsHtml(cats, favCount);
+
+  if (!showFavoritesOnly && !activeCategory) {
+    const pinned = base.filter(l => l.favorite);
+    if (pinned.length) {
+      html += `
+        <div class="category pinned-category">
+          <h2>Избранное</h2>
+          <div class="grid">${pinned.map(l => cardHtml(l, true)).join('')}</div>
+        </div>`;
+    }
   }
 
-  main.innerHTML = Object.entries(groups).map(([cat, items]) => `
-    <div class="category">
-      <h2>${escapeHtml(cat)}</h2>
-      <div class="grid">
-        ${items.map(l => `
-          <div class="link-card" data-url="${escapeHtml(l.url)}">
-            <div class="card-actions">
-              <button onclick="editLink('${l.id}')" title="Редактировать">✎</button>
-              <button onclick="showDeleteConfirm('${l.id}')" title="Удалить"></button>
-            </div>
-            <div class="link-head">
-              <img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(getDomain(l.url))}&sz=32" alt="">
-              <div class="link-title">${escapeHtml(l.title)}</div>
-            </div>
-            <div class="link-url">${escapeHtml(getDomain(l.url))}</div>
-            ${l.desc ? `<div class="link-desc">${escapeHtml(l.desc)}</div>` : ''}
-          </div>
-        `).join('')}
+  if (filtered.length === 0) {
+    html += `<div class="empty"><span class="icon">️</span>Тьма пуста...<br><small style="color:#443333">${links.length === 0 ? 'Добавь первую ссылку, чтобы разжечь огонь' : 'Ничего не найдено во тьме'}</small></div>`;
+  } else {
+    const groups = {};
+    filtered.forEach(l => {
+      const c = l.category || 'Без категории';
+      (groups[c] = groups[c] || []).push(l);
+    });
+    html += Object.entries(groups).map(([cat, items]) => `
+      <div class="category" style="--card-accent:${categoryColor(cat)}">
+        <h2>${escapeHtml(cat)}</h2>
+        <div class="grid">${items.map(l => cardHtml(l, false)).join('')}</div>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+  }
+
+  $('main').innerHTML = html;
 
   document.querySelectorAll('.link-card').forEach(card => {
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.card-actions')) return;
+      if (e.target.closest('.card-actions') || e.target.closest('.fav-btn') || e.target.closest('.cat-tag')) return;
       const url = card.getAttribute('data-url');
       window.open(url, '_blank', 'noopener');
     });
   });
+  document.querySelectorAll('.fav-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(btn.dataset.favId); });
+  });
+  document.querySelectorAll('.cat-tag').forEach(tag => {
+    tag.addEventListener('click', (e) => {
+      e.stopPropagation();
+      activeCategory = tag.dataset.catTag;
+      $('filter').value = activeCategory;
+      render();
+    });
+  });
+  document.querySelectorAll('[data-chip-all]').forEach(btn => btn.addEventListener('click', () => {
+    activeCategory = ''; showFavoritesOnly = false; render();
+  }));
+  document.querySelectorAll('[data-chip-fav]').forEach(btn => btn.addEventListener('click', () => {
+    showFavoritesOnly = !showFavoritesOnly; render();
+  }));
+  document.querySelectorAll('[data-chip-cat]').forEach(btn => btn.addEventListener('click', () => {
+    const cat = btn.getAttribute('data-chip-cat');
+    activeCategory = (activeCategory === cat) ? '' : cat;
+    $('filter').value = activeCategory;
+    render();
+  }));
 
-  updateFilter();
+  updateFilter(cats);
 }
 
-function updateFilter() {
-  const cats = [...new Set(links.map(l => l.category).filter(Boolean))].sort();
-  const current = $('filter').value;
+function toggleFavorite(id) {
+  const l = links.find(x => x.id === id);
+  if (l) { l.favorite = !l.favorite; save(); render(); }
+}
+
+function setViewMode(mode) {
+  viewMode = mode;
+  localStorage.setItem('viewMode', mode);
+  document.body.classList.toggle('view-list', mode === 'list');
+  $('viewGridBtn').classList.toggle('btn-primary', mode === 'grid');
+  $('viewListBtn').classList.toggle('btn-primary', mode === 'list');
+}
+
+function updateFilter(cats) {
+  cats = cats || [...new Set(links.map(l => l.category).filter(Boolean))].sort();
   $('filter').innerHTML = `<option value="">Все категории</option>` +
-    cats.map(c => `<option ${c===current?'selected':''}>${escapeHtml(c)}</option>`).join('');
+    cats.map(c => `<option ${c===activeCategory?'selected':''}>${escapeHtml(c)}</option>`).join('');
   $('catList').innerHTML = cats.map(c => `<option value="${escapeHtml(c)}">`).join('');
 }
 
@@ -1148,7 +1350,7 @@ function saveLink() {
   if (editId) {
     Object.assign(links.find(x => x.id === editId), data);
   } else {
-    links.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), ...data });
+    links.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), favorite: false, ...data });
   }
   save(); render(); closeModal();
 }
@@ -1194,14 +1396,91 @@ $('addBtn').onclick = () => openModal();
 $('saveBtn').onclick = saveLink;
 $('confirmDeleteBtn').onclick = confirmDelete;
 $('search').oninput = render;
-$('filter').onchange = render;
+$('filter').onchange = () => { activeCategory = $('filter').value; render(); };
+$('viewGridBtn').onclick = () => setViewMode('grid');
+$('viewListBtn').onclick = () => setViewMode('list');
 
-$('exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify(links, null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'darkness_links.json'; a.click();
-};
+// Универсальное сохранение файла: работает и как опубликованная страница
+// (через системную возможность "downloads"), и как обычный HTML-файл на диске.
+async function saveFile(filename, content, mime) {
+  if (window.claude && typeof window.claude.use === 'function') {
+    try {
+      const downloads = await window.claude.use('downloads');
+      if (downloads) { await downloads.save({ filename, data: content }); return true; }
+    } catch (err) {
+      if (err && err.code === 'declined') return null;
+    }
+  }
+  try {
+    const blob = new Blob([content], {type: mime || 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    return true;
+  } catch (err) { return false; }
+}
+
+function buildMarkdown() {
+  const groups = {};
+  links.forEach(l => { const c = l.category || 'Без категории'; (groups[c] = groups[c] || []).push(l); });
+  const cats = Object.keys(groups).sort();
+  let md = `# ☠ ТЬМА — Мои ссылки\n\n`;
+  cats.forEach(cat => {
+    md += `## ${cat}\n\n`;
+    groups[cat].forEach(l => {
+      const star = l.favorite ? '🔥 ' : '';
+      md += `- ${star}[${l.title}](${l.url})${l.desc ? ' — ' + l.desc : ''}\n`;
+    });
+    md += `\n`;
+  });
+  return md;
+}
+
+async function copyMarkdownToClipboard() {
+  const md = buildMarkdown();
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(md);
+      alert('📋 Список скопирован в буфер обмена!');
+      return;
+    }
+    throw new Error('no clipboard api');
+  } catch (err) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = md; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (ok) { alert('📋 Список скопирован в буфер обмена!'); return; }
+      throw new Error('execCommand failed');
+    } catch (err2) {
+      const saved = await saveFile('darkness_links.md', md, 'text/markdown');
+      alert(saved ? 'Буфер обмена недоступен — список сохранён файлом.' : 'Не удалось скопировать или сохранить список.');
+    }
+  }
+}
+
+$('exportBtn').onclick = (e) => { e.stopPropagation(); $('exportMenu').classList.toggle('active'); };
+$('exportMenu').addEventListener('click', e => e.stopPropagation());
+document.addEventListener('click', () => $('exportMenu').classList.remove('active'));
+document.querySelectorAll('#exportMenu [data-export]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    $('exportMenu').classList.remove('active');
+    const type = btn.dataset.export;
+    if (type === 'json') {
+      const ok = await saveFile('darkness_links.json', JSON.stringify(links, null, 2), 'application/json');
+      if (ok === false) alert('Не удалось сохранить файл');
+    } else if (type === 'md') {
+      const ok = await saveFile('darkness_links.md', buildMarkdown(), 'text/markdown');
+      if (ok === false) alert('Не удалось сохранить файл');
+    } else if (type === 'copy') {
+      copyMarkdownToClipboard();
+    }
+  });
+});
+
 $('importBtn').onclick = () => $('fileInput').click();
 $('fileInput').onchange = e => {
   const f = e.target.files[0]; if (!f) return;
@@ -1221,6 +1500,7 @@ document.addEventListener('keydown', e => {
     closeModal();
     closeAvatarModal();
     closeConfirm();
+    $('exportMenu').classList.remove('active');
   }
   if (e.key === 'Enter' && $('modal').classList.contains('active')) saveLink();
 });
@@ -1237,6 +1517,7 @@ $('confirmModal').addEventListener('click', (e) => {
 
 // Инициализация
 loadAvatar();
+setViewMode(viewMode);
 render();
 </script>
 </body>
